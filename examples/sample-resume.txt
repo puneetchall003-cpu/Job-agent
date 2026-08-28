@@ -1,0 +1,31 @@
+Priya Sharma
+priya.sharma@example.com | +91 98765 43210 | linkedin.com/in/priyasharma | github.com/priyasharma
+Bengaluru, India
+
+Lead DevOps Engineer with 11 years of experience designing and running cloud
+platforms for high-traffic products.
+
+EXPERIENCE
+
+Lead DevOps Engineer, Acme Payments, 2019 - Present
+- Led a team of 6 running 40+ Kubernetes clusters on AWS EKS serving 12M users
+- Cut deployment lead time from 4 days to 25 minutes with ArgoCD GitOps and Jenkins
+- Reduced cloud spend 34% ($1.2M/year) through rightsizing and spot instance automation
+- Built Terraform modules adopted by 14 teams; Vault for secrets, Istio for service mesh
+- Observability with Prometheus, Grafana and OpenTelemetry; cut MTTR from 45 to 11 minutes
+
+Senior Systems Engineer, Beta Infrastructure Ltd, 2014 - 2019
+- Migrated 200+ services from on-premise VMware to GCP with zero customer downtime
+- Automated provisioning with Ansible and Python, replacing three weeks of manual work
+- Ran PostgreSQL and Redis in HA, 99.98% availability across two regions
+
+Systems Administrator, Gamma Tech, 2012 - 2014
+- Managed 300 Linux servers, Nagios monitoring, Bash automation
+
+EDUCATION
+B.Tech Computer Science, VIT Vellore, 2012
+
+CERTIFICATIONS
+AWS Certified Solutions Architect - Professional
+CKA
+HashiCorp Certified Terraform Associate

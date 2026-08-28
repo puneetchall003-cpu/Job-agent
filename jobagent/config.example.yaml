@@ -1,0 +1,235 @@
+# ============================================================================
+# job-agent configuration
+# Copy to config.yaml (jobagent init does this) and edit.
+# ${VAR} is read from the environment - keep secrets out of this file.
+# ============================================================================
+
+data_dir: data          # sqlite db, generated documents and digest land here
+http_delay: 0.6         # seconds between API calls; be polite
+
+# ---------------------------------------------------------------------------
+# You. Anything set here overrides what was parsed from the resume.
+# ---------------------------------------------------------------------------
+profile:
+  resume_path: "resume.pdf"        # pdf, docx, txt or md
+  full_name: ""                    # leave blank to use the parsed value
+  email: ""
+  phone: ""
+  location: "Bengaluru, India"
+  headline: "Lead DevOps Engineer"
+  years_experience: 11
+  linkedin_url: ""
+  github_url: ""
+  portfolio_url: ""
+
+  # Skills the parser may miss. Lowercase.
+  extra_skills:
+    - platform engineering
+    - cost optimization
+
+  # Answers to the questions every application form asks. The agent uses these
+  # verbatim and never guesses. Anything missing here becomes a field it leaves
+  # for you, so it is worth filling all of them in properly.
+  answers:
+    notice_period: "60 days"
+    work_authorization: "Indian citizen. UK and US roles would require visa sponsorship."
+    salary_expectation: "Open to discussion, benchmarked to the role and market."
+    relocation: "Yes, open to relocating for the right role."
+    years_experience: "11"
+    work_preference: "Remote or hybrid, open to on-site for the right team."
+    current_company: ""
+    why_this_company: ""            # left blank, the AI writes this per-role
+    pronouns: ""
+    eeo_decline: "I prefer not to disclose"
+
+# ---------------------------------------------------------------------------
+# What to look for
+# ---------------------------------------------------------------------------
+search:
+  titles:
+    - Lead DevOps Engineer
+    - DevOps Manager
+    - Principal DevOps Engineer
+    - Staff Site Reliability Engineer
+    - Platform Engineering Lead
+    - Head of Infrastructure
+    - Cloud Infrastructure Architect
+
+  exclude_titles:
+    - sales
+    - recruiter
+    - support engineer
+    - data entry
+
+  keywords: [kubernetes, terraform, aws, ci/cd, observability, gitops]
+
+  countries: [IN, GB, US]
+
+  remote_only: false
+  include_remote: true
+  max_age_days: 21
+
+  # Only applied when the posting states a salary; unknown is never penalised.
+  min_salary:
+    IN: 4000000        # INR
+    GB: 90000          # GBP
+    US: 160000         # USD
+
+  exclude_companies: []
+
+# ---------------------------------------------------------------------------
+# Match thresholds
+# ---------------------------------------------------------------------------
+match:
+  min_score: 60          # keyword score needed to reach the AI screen
+  use_llm: true          # AI reads the description and gives a real verdict
+  llm_top_n: 25          # only the best N get the AI screen (cost control)
+  llm_min_score: 65      # blended score needed to actually apply
+
+# ---------------------------------------------------------------------------
+# Applying
+#
+# enabled: false is the safety switch. Nothing is ever submitted while it is
+# false - `jobagent run --apply` flips it for that run only.
+# ---------------------------------------------------------------------------
+apply:
+  enabled: false
+  daily_limit: 15
+  require_confirmation: true        # ask before each submission
+  auto_methods: [greenhouse, lever] # submitted via official ATS APIs
+  assisted_methods: [assisted]      # opened in your browser for you to submit
+  browser_profile_dir: ".browser-profile"
+  assisted_timeout_s: 600
+
+  # Optional per-board Greenhouse Job Board API keys, if a company gave you one.
+  # greenhouse_keys:
+  #   somecompany: "${GREENHOUSE_KEY_SOMECOMPANY}"
+
+# ---------------------------------------------------------------------------
+# AI (optional). Without a key you still get discovery, keyword matching,
+# the digest and template cover letters - just no AI screening or tailoring.
+# ---------------------------------------------------------------------------
+llm:
+  api_key: "${ANTHROPIC_API_KEY}"
+  model: claude-sonnet-5
+  max_calls: 400          # hard ceiling per run
+
+# ---------------------------------------------------------------------------
+# Daily digest email
+# ---------------------------------------------------------------------------
+notify:
+  enabled: false
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
+  smtp_user: "${SMTP_USER}"
+  smtp_password: "${SMTP_PASSWORD}"    # Gmail: use an App Password
+  from_addr: "${SMTP_USER}"
+  to_addr: "${SMTP_USER}"
+
+# ---------------------------------------------------------------------------
+# Where to look.
+#
+# The ATS boards (greenhouse/lever/ashby) are the valuable ones: they publish
+# every open role and, for greenhouse and lever, accept an application through
+# an official API. Run `jobagent verify-boards` to prune dead tokens, and add
+# any company you care about - the token is the last path segment of their
+# careers URL (job-boards.greenhouse.io/TOKEN, jobs.lever.co/TOKEN).
+# ---------------------------------------------------------------------------
+sources:
+
+  adzuna:
+    enabled: true
+    # Free key from https://developer.adzuna.com/ - the only source with
+    # genuine India + UK + US coverage. Without it you lose most of the volume.
+    app_id: "${ADZUNA_APP_ID}"
+    app_key: "${ADZUNA_APP_KEY}"
+    pages: 2
+    results_per_page: 50
+
+  remotive:
+    enabled: true
+    search_terms: [devops, sre, platform engineer, infrastructure]
+
+  remoteok:
+    enabled: true
+
+  arbeitnow:
+    enabled: true
+    pages: 3
+
+  jobicy:
+    enabled: true
+    industry: devops
+
+  greenhouse:
+    enabled: true
+    companies:
+      # US / global
+      - gitlab
+      - cloudflare
+      - databricks
+      - dropbox
+      - stripe
+      - doordash
+      - coinbase
+      - figma
+      - reddit
+      - samsara
+      - discord
+      - instacart
+      - lyft
+      - pinterest
+      - twilio
+      - flexport
+      - brex
+      # UK
+      - monzo
+      - starlingbank
+      - wise
+      - deliveroo
+      - gocardless
+      - thoughtmachine
+      - checkout
+      # India
+      - razorpay
+      - postman
+      - browserstack
+      - freshworks
+
+  lever:
+    enabled: true
+    companies:
+      - netflix
+      - plaid
+      - spotify
+      - revolut
+      - intercom
+      - kraken
+      - zopa
+
+  ashby:
+    enabled: true
+    companies:
+      - linear
+      - vanta
+      - deel
+      - notion
+      - mercury
+
+  # LinkedIn.
+  #
+  # OFF BY DEFAULT AND YOU SHOULD PROBABLY LEAVE IT OFF.
+  #
+  # LinkedIn's User Agreement forbids automated access. Turning this on drives
+  # your own logged-in browser to read search results, which is automation, and
+  # accounts do get restricted for it. You lose very little by leaving it off:
+  # most of these roles are syndicated from an ATS, so the sources above find
+  # them anyway - with an application path the agent can actually drive.
+  #
+  # Either way you always get prefiltered LinkedIn search links in the digest
+  # (`jobagent linkedin`), which involves no automation at all.
+  linkedin:
+    enabled: false
+    acknowledge_tos_risk: false     # must ALSO be true before it will run
+    max_per_search: 25
+    headless: false

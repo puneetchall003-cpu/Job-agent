@@ -1,0 +1,47 @@
+# Optional: run discovery on a schedule and email yourself the digest.
+#
+# This deliberately does NOT submit applications - CI has no browser you can
+# watch and no way for you to confirm. It finds and ranks roles, writes the
+# digest, and leaves the queue for you to work locally with `jobagent apply`.
+name: daily job search
+
+on:
+  schedule:
+    - cron: "0 6 * * 1-5"   # 06:00 UTC, weekdays
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -e ".[ai]"
+
+      - name: Restore the application history
+        uses: actions/cache@v4
+        with:
+          path: data
+          key: jobagent-data-${{ github.run_id }}
+          restore-keys: jobagent-data-
+
+      - name: Run discovery and send the digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        run: |
+          jobagent run            # dry run: finds, scores, tailors, queues
+          jobagent digest --send
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digest
+          path: data/digest.html

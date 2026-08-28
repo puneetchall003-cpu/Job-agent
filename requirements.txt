@@ -1,0 +1,6 @@
+requests>=2.31
+PyYAML>=6.0
+pypdf>=4.0
+python-docx>=1.1
+anthropic>=0.40      # optional: AI screening, cover letters, resume tailoring
+playwright>=1.40     # optional: browser-assisted applying
