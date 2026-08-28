@@ -5,7 +5,7 @@ data/
 *.pdf
 *.docx
 !examples/*.pdf
-resume*
+/resume*
 .env
 
 __pycache__/
