@@ -95,11 +95,11 @@ sources:
   jobicy: { enabled: true, industry: devops }
   greenhouse:
     enabled: true
-    companies: [gitlab, cloudflare, stripe, figma, monzo, starlingbank, wise,
-                gocardless, thoughtmachine, razorpay, postman, browserstack]
+    companies: [gitlab, cloudflare, stripe, figma, monzo, wise,
+                gocardless, postman]
   lever:
     enabled: true
-    companies: [netflix, plaid, spotify, revolut, intercom]
+    companies: [spotify]
   ashby:
     enabled: true
     companies: [linear, vanta, deel, notion]

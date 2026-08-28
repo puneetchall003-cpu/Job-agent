@@ -184,26 +184,18 @@ sources:
       - brex
       # UK
       - monzo
-      - starlingbank
       - wise
       - deliveroo
       - gocardless
-      - thoughtmachine
       - checkout
       # India
-      - razorpay
       - postman
-      - browserstack
       - freshworks
 
   lever:
     enabled: true
     companies:
-      - netflix
-      - plaid
       - spotify
-      - revolut
-      - intercom
       - kraken
       - zopa
 

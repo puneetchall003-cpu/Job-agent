@@ -141,3 +141,21 @@ def test_linkedin_source_refuses_without_acknowledgement(config):
     from jobagent.sources.linkedin import LinkedInSource
     config.sources = {"linkedin": {"enabled": True, "acknowledge_tos_risk": False}}
     assert LinkedInSource(config, FakeHttp({})).collect() == []
+
+
+def test_jobicy_falls_back_to_unfiltered_on_bad_industry(config):
+    from jobagent.sources.aggregators import JobicySource
+
+    class RejectsIndustry(FakeHttp):
+        def get_json(self, url, params=None, **kwargs):
+            self.calls.append(params)
+            if params and "industry" in params:
+                return None            # Jobicy answers 400 for unknown slugs
+            return {"jobs": [{"jobTitle": "DevOps Lead", "companyName": "X",
+                              "url": "https://jobicy.com/j/1", "jobGeo": "USA"}]}
+
+    http = RejectsIndustry({})
+    config.sources = {"jobicy": {"industry": "not-a-real-slug"}}
+    jobs = JobicySource(config, http).collect()
+    assert len(jobs) == 1
+    assert len(http.calls) == 2 and "industry" not in http.calls[1]

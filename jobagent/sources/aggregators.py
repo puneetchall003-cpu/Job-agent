@@ -199,6 +199,10 @@ class JobicySource(Source):
             return
         params = {"count": 50, "industry": self.conf.get("industry", "devops")}
         data = self.http.get_json(self.BASE, params=params)
+        if data is None:
+            # Jobicy rejects unknown industry slugs with a 400; the unfiltered
+            # feed still works, and the matcher filters by content anyway.
+            data = self.http.get_json(self.BASE, params={"count": 50})
         for item in (data or {}).get("jobs", []):
             location = item.get("jobGeo", "") or "Remote"
             yield Job(
