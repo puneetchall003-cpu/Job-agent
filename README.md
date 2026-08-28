@@ -196,6 +196,15 @@ you to delete.
 the digest. It deliberately does **not** submit — CI has no browser you can watch
 and no way for you to confirm. It queues; you apply locally.
 
+CI uses `config.ci.yaml` (committed, no secrets, no resume — your skills are
+listed inline for the matcher, so edit its profile section). Three things to
+know: scheduled workflows only fire from the **default branch**, so merge this
+first; secrets (`ANTHROPIC_API_KEY`, `ADZUNA_APP_ID`/`ADZUNA_APP_KEY`,
+`SMTP_USER`/`SMTP_PASSWORD`) go in *Settings → Secrets and variables → Actions*;
+and with zero secrets it still runs on the free sources, just without AI
+screening, Adzuna volume, or email — the digest is attached to each run as an
+artifact either way.
+
 Locally, cron works fine:
 
 ```cron
