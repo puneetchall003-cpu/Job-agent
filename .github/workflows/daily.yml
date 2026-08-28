@@ -1,8 +1,18 @@
-# Optional: run discovery on a schedule and email yourself the digest.
+# Run discovery on a schedule and email yourself the digest.
 #
 # This deliberately does NOT submit applications - CI has no browser you can
 # watch and no way for you to confirm. It finds and ranks roles, writes the
 # digest, and leaves the queue for you to work locally with `jobagent apply`.
+#
+# Uses config.ci.yaml (committed, no secrets, skills listed inline) rather
+# than config.yaml (gitignored, personal). Edit the profile section of
+# config.ci.yaml so the matcher scores against YOUR skills.
+#
+# NOTE: GitHub only runs scheduled workflows from the default branch, so the
+# cron (and the manual Run workflow button) activate once this is merged.
+# Secrets are optional: without them the free sources still run; add
+# ANTHROPIC_API_KEY for AI screening, ADZUNA_APP_ID/ADZUNA_APP_KEY for the
+# main IN/UK/US feed, SMTP_USER/SMTP_PASSWORD to receive the digest by email.
 name: daily job search
 
 on:
@@ -38,10 +48,12 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: |
-          jobagent run            # dry run: finds, scores, tailors, queues
-          jobagent digest --send
+          jobagent --config config.ci.yaml run     # dry run: finds, scores, queues
+          jobagent --config config.ci.yaml digest --send
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: digest
           path: data/digest.html
+          if-no-files-found: ignore

@@ -1,0 +1,106 @@
+# ============================================================================
+# CI configuration - used by .github/workflows/daily.yml.
+#
+# This file IS committed to the repo (unlike config.yaml), so it contains no
+# secrets and no resume. Skills are listed inline under extra_skills, which is
+# what the matcher scores against when there is no resume to parse.
+#
+# EDIT THE PROFILE SECTION: replace the placeholder name/skills with yours.
+# ============================================================================
+
+data_dir: data
+
+profile:
+  resume_path: ""                  # no resume in CI; skills come from below
+  full_name: "Your Name"           # <-- edit me
+  headline: "Lead DevOps Engineer"
+  years_experience: 11
+  location: "Bengaluru, India"
+
+  # This list stands in for your resume in CI - the matcher scores against it,
+  # so make it honest and complete. Lowercase.
+  extra_skills:
+    - kubernetes
+    - terraform
+    - aws
+    - docker
+    - ansible
+    - jenkins
+    - argocd
+    - gitops
+    - ci/cd
+    - prometheus
+    - grafana
+    - observability
+    - python
+    - bash
+    - linux
+    - helm
+    - vault
+    - platform engineering
+    - devops
+    - sre
+
+  answers: {}                      # CI never applies, so no answers needed
+
+search:
+  titles:
+    - Lead DevOps Engineer
+    - DevOps Manager
+    - Principal DevOps Engineer
+    - Staff Site Reliability Engineer
+    - Platform Engineering Lead
+    - Head of Infrastructure
+  exclude_titles: [sales, recruiter, support engineer]
+  keywords: [kubernetes, terraform, aws, ci/cd, observability, gitops]
+  countries: [IN, GB, US]
+  include_remote: true
+  max_age_days: 21
+
+match:
+  min_score: 60
+  use_llm: true                    # no-ops gracefully when the key is absent
+  llm_top_n: 25
+  llm_min_score: 65
+
+# CI discovers and queues only. Applying stays local, where you can watch it.
+apply:
+  enabled: false
+  daily_limit: 0
+
+llm:
+  api_key: "${ANTHROPIC_API_KEY}"
+  model: claude-sonnet-5
+
+notify:
+  enabled: true                    # skipped with a log line if SMTP vars are absent
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
+  smtp_user: "${SMTP_USER}"
+  smtp_password: "${SMTP_PASSWORD}"
+  from_addr: "${SMTP_USER}"
+  to_addr: "${SMTP_USER}"
+
+sources:
+  adzuna:
+    enabled: true                  # skipped with a log line if the keys are absent
+    app_id: "${ADZUNA_APP_ID}"
+    app_key: "${ADZUNA_APP_KEY}"
+    pages: 2
+  remotive:
+    enabled: true
+    search_terms: [devops, sre, platform engineer]
+  remoteok: { enabled: true }
+  arbeitnow: { enabled: true, pages: 3 }
+  jobicy: { enabled: true, industry: devops }
+  greenhouse:
+    enabled: true
+    companies: [gitlab, cloudflare, stripe, figma, monzo, starlingbank, wise,
+                gocardless, thoughtmachine, razorpay, postman, browserstack]
+  lever:
+    enabled: true
+    companies: [netflix, plaid, spotify, revolut, intercom]
+  ashby:
+    enabled: true
+    companies: [linear, vanta, deel, notion]
+  linkedin: { enabled: false }
